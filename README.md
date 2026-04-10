@@ -1,6 +1,6 @@
 # Capitoday Events Prototype
 
-A modern, production-ready events discovery platform built with Node.js/Express and vanilla JavaScript. Features 46+ mock crypto/meme coin events with real-time filtering, search, and modal detail views.
+A simple prototype of an events discovery platform built with Node.js/Express and vanilla JavaScript. Features 46+ mock crypto/meme coin events with real-time filtering, search, and modal detail views.
 
 ## 🚀 Quick Start
 
@@ -326,11 +326,6 @@ NODE_ENV=development
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
----
-
-## 📄 License
-
-© 2026 Capitoday Events. Built by the Crypto Community.
 
 ---
 
