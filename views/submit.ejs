@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/submit.css">
+</head>
+<body>
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div class="topnav-left">
+        <a href="/" class="logo" aria-label="EventPulse">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="#CDC13B"/>
+            <path d="M8 16c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8" stroke="#0A0B0D" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="16" cy="16" r="3" fill="#0A0B0D"/>
+          </svg>
+          <span class="logo-text">EventPulse</span>
+        </a>
+        <div class="nav-links">
+          <a href="#" class="nav-link">Discover</a>
+          <a href="/" class="nav-link active">Events</a>
+          <a href="#" class="nav-link">Community</a>
+        </div>
+      </div>
+      <div class="topnav-right">
+        <a class="btn-submit-event" href="/">&larr; Back to Events</a>
+        <button class="avatar-btn" aria-label="User menu">
+          <div class="avatar-placeholder">D</div>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero submit-hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1>Submit Event</h1>
+        <p class="hero-sub">X Spaces, AMAs, livestreams, and exchange listings</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="main submit-main">
+    <div class="main-inner submit-inner">
+    <form id="submitEventForm" class="create-layout" novalidate>
+      <section class="left-panel panel">
+        <label class="cover-upload" for="coverImage">
+          <input id="coverImage" name="coverImage" type="file" accept="image/*">
+          <div class="cover-preview" id="coverPreview">
+            <span class="cover-icon">&#128247;</span>
+            <strong>Upload Cover Image</strong>
+            <small>PNG, JPG up to 5MB</small>
+          </div>
+        </label>
+        <p class="file-name" id="coverFileName">No image selected</p>
+      </section>
+
+      <section class="right-panel panel">
+        <div class="field event-type-field">
+          <label for="eventType">Event type <span>*</span></label>
+          <div class="event-type-select">
+            <span id="eventTypeIcon" class="event-type-icon" aria-hidden="true">🗓️</span>
+            <select id="eventType" name="eventType" required>
+              <option value="">🗓️ Select event type</option>
+              <option value="exchange">🚀 Exchange Listing</option>
+              <option value="xspaces">🎙️ X Spaces</option>
+              <option value="ama">💬 AMA</option>
+              <option value="livestream">📺 Livestream</option>
+              <option value="other">📅 Other / Generic</option>
+            </select>
+          </div>
+          <small id="eventTypeHelper">Select type to configure type-specific fields.</small>
+        </div>
+
+        <div class="field title-field">
+          <label for="title">Event Name <span>*</span></label>
+          <input id="title" name="title" type="text" placeholder="Event Name" required>
+        </div>
+
+        <div class="date-time-grid section-box">
+          <div class="field">
+            <label for="startDate">Start Date <span>*</span></label>
+            <input id="startDate" name="startDate" type="date" required>
+          </div>
+          <div class="field">
+            <label for="startTime">Start Time <span>*</span></label>
+            <input id="startTime" name="startTime" type="time" required>
+          </div>
+          <div class="field">
+            <label for="endDate">End Date</label>
+            <input id="endDate" name="endDate" type="date">
+          </div>
+          <div class="field">
+            <label for="endTime">End Time</label>
+            <input id="endTime" name="endTime" type="time">
+          </div>
+          <label class="checkbox-line">
+            <input id="unknownTime" name="unknownTime" type="checkbox">
+            End time Unknown
+          </label>
+        </div>
+
+        <div class="field" id="primaryLinkWrap">
+          <label for="primaryLink" id="primaryLinkLabel">Event URL</label>
+          <input id="primaryLink" name="primaryLink" type="url" placeholder="https://">
+          <div class="detected-row" id="detectedPlatformRow"></div>
+          <a id="linkPreview" class="small-link" href="#" target="_blank" rel="noopener" hidden>Open link preview</a>
+        </div>
+
+        <div class="dynamic-grid" id="dynamicFields">
+          <div class="field" data-field="exchangeName" hidden>
+            <label for="exchangeName">Exchange</label>
+            <input id="exchangeName" name="exchangeName" type="text" placeholder="Exchange name">
+          </div>
+
+          <div class="field" data-field="exchangePairUrl" hidden>
+            <label for="exchangePairUrl">Exchange Pair URL</label>
+            <input id="exchangePairUrl" name="exchangePairUrl" type="url" placeholder="https://">
+            <small id="pairSymbolHint"></small>
+          </div>
+
+          <div class="field" data-field="sourceLink" hidden>
+            <label for="sourceLink">Source link</label>
+            <input id="sourceLink" name="sourceLink" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="eventUrl" hidden>
+            <label for="eventUrl">Event URL</label>
+            <input id="eventUrl" name="eventUrl" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="inviteLink" hidden>
+            <label for="inviteLink">Invite link</label>
+            <input id="inviteLink" name="inviteLink" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="xSpaceLink" hidden>
+            <label for="xSpaceLink">X Space Link</label>
+            <input id="xSpaceLink" name="xSpaceLink" type="url" readonly>
+          </div>
+
+          <div class="field" data-field="host" hidden>
+            <label for="host">Host</label>
+            <input id="host" name="host" type="text" placeholder="Host name">
+          </div>
+
+          <div class="field" data-field="hostHandles" hidden>
+            <label for="hostHandles">Host handles</label>
+            <input id="hostHandles" name="hostHandles" type="text" placeholder="@handle1, @handle2">
+          </div>
+
+          <div class="field" data-field="streamUrl" hidden>
+            <label for="streamUrl">Stream URL</label>
+            <input id="streamUrl" name="streamUrl" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="recordingLink" hidden>
+            <label for="recordingLink">Recording link</label>
+            <input id="recordingLink" name="recordingLink" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="streamChannel" hidden>
+            <label for="streamChannel">Stream channel</label>
+            <input id="streamChannel" name="streamChannel" type="text" placeholder="Channel name">
+          </div>
+        </div>
+
+        <div class="field section-box">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="6" placeholder="Describe your event..."></textarea>
+        </div>
+
+        <div class="embed-preview" id="embedPreview" hidden></div>
+
+        <div class="submit-row">
+          <button type="submit" class="create-btn">Create Event</button>
+          <p id="formMessage" aria-live="polite"></p>
+        </div>
+      </section>
+    </form>
+    </div>
+  </main>
+
+  <script src="/submit.js"></script>
+</body>
+</html>

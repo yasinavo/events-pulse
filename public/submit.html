@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Event - Capitoday</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="submit.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="back-link">&larr; Back to Events</a>
+  </header>
+
+  <main class="page-shell">
+    <form id="submitEventForm" class="create-layout" novalidate>
+      <section class="left-panel panel">
+        <label class="cover-upload" for="coverImage">
+          <input id="coverImage" name="coverImage" type="file" accept="image/*">
+          <div class="cover-preview" id="coverPreview">
+            <span class="cover-icon">&#128247;</span>
+            <strong>Upload Cover Image</strong>
+            <small>PNG, JPG up to 5MB</small>
+          </div>
+        </label>
+        <p class="file-name" id="coverFileName">No image selected</p>
+
+        <div class="meta-block">
+          <div class="meta-label">Type Style</div>
+          <div class="type-chip neutral" id="typeChip">No type selected</div>
+        </div>
+      </section>
+
+      <section class="right-panel panel">
+        <div class="field">
+          <label for="eventType">Event type <span>*</span></label>
+          <select id="eventType" name="eventType" required>
+            <option value="">Select event type</option>
+            <option value="exchange">Exchange Listing</option>
+            <option value="xspaces">X Spaces</option>
+            <option value="ama">AMA</option>
+            <option value="livestream">Livestream</option>
+            <option value="other">Other / Generic</option>
+          </select>
+          <small id="eventTypeHelper">Select type to configure type-specific fields.</small>
+        </div>
+
+        <div class="field title-field">
+          <label for="title">Event Name <span>*</span></label>
+          <input id="title" name="title" type="text" placeholder="Event Name" required>
+        </div>
+
+        <div class="date-time-grid section-box">
+          <div class="field">
+            <label for="startDate">Start Date <span>*</span></label>
+            <input id="startDate" name="startDate" type="date" required>
+          </div>
+          <div class="field">
+            <label for="startTime">Start Time <span>*</span></label>
+            <input id="startTime" name="startTime" type="time" required>
+          </div>
+          <div class="field">
+            <label for="endDate">End Date</label>
+            <input id="endDate" name="endDate" type="date">
+          </div>
+          <div class="field">
+            <label for="endTime">End Time</label>
+            <input id="endTime" name="endTime" type="time">
+          </div>
+          <div class="field">
+            <label for="duration">Duration</label>
+            <select id="duration" name="duration">
+              <option value="">Select duration</option>
+              <option value="30">30 min</option>
+              <option value="60">1 hour</option>
+              <option value="120">2 hours</option>
+              <option value="180">3 hours</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="field" id="customDurationWrap" hidden>
+            <label for="customDuration">Custom Duration (min)</label>
+            <input id="customDuration" name="customDuration" type="number" min="5" step="5" placeholder="45">
+          </div>
+          <label class="checkbox-line">
+            <input id="unknownTime" name="unknownTime" type="checkbox">
+            I dont know yet
+          </label>
+        </div>
+
+        <div class="field" id="primaryLinkWrap">
+          <label for="primaryLink" id="primaryLinkLabel">Event URL</label>
+          <input id="primaryLink" name="primaryLink" type="url" placeholder="https://">
+          <div class="detected-row" id="detectedPlatformRow"></div>
+          <a id="linkPreview" class="small-link" href="#" target="_blank" rel="noopener" hidden>Open link preview</a>
+        </div>
+
+        <div class="dynamic-grid" id="dynamicFields">
+          <div class="field" data-field="exchangeName" hidden>
+            <label for="exchangeName">Exchange</label>
+            <input id="exchangeName" name="exchangeName" type="text" placeholder="Exchange name">
+          </div>
+
+          <div class="field" data-field="exchangePairUrl" hidden>
+            <label for="exchangePairUrl">Exchange Pair URL</label>
+            <input id="exchangePairUrl" name="exchangePairUrl" type="url" placeholder="https://">
+            <small id="pairSymbolHint"></small>
+          </div>
+
+          <div class="field" data-field="sourceLink" hidden>
+            <label for="sourceLink">Source link</label>
+            <input id="sourceLink" name="sourceLink" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="eventUrl" hidden>
+            <label for="eventUrl">Event URL</label>
+            <input id="eventUrl" name="eventUrl" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="inviteLink" hidden>
+            <label for="inviteLink">Invite link</label>
+            <input id="inviteLink" name="inviteLink" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="xSpaceLink" hidden>
+            <label for="xSpaceLink">xSpaceLink</label>
+            <input id="xSpaceLink" name="xSpaceLink" type="url" readonly>
+          </div>
+
+          <div class="field" data-field="host" hidden>
+            <label for="host">Host</label>
+            <input id="host" name="host" type="text" placeholder="Host name">
+          </div>
+
+          <div class="field" data-field="hostHandles" hidden>
+            <label for="hostHandles">Host handles</label>
+            <input id="hostHandles" name="hostHandles" type="text" placeholder="@handle1, @handle2">
+          </div>
+
+          <div class="field" data-field="streamUrl" hidden>
+            <label for="streamUrl">Stream URL</label>
+            <input id="streamUrl" name="streamUrl" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="recordingLink" hidden>
+            <label for="recordingLink">Recording link</label>
+            <input id="recordingLink" name="recordingLink" type="url" placeholder="https://">
+          </div>
+
+          <div class="field" data-field="streamChannel" hidden>
+            <label for="streamChannel">Stream channel</label>
+            <input id="streamChannel" name="streamChannel" type="text" placeholder="Channel name">
+          </div>
+        </div>
+
+        <div class="field section-box">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="4" placeholder="Describe your event..."></textarea>
+        </div>
+
+        <div class="embed-preview" id="embedPreview" hidden></div>
+
+        <div class="submit-row">
+          <button type="submit" class="create-btn">Create Event</button>
+          <p id="formMessage" aria-live="polite"></p>
+        </div>
+      </section>
+    </form>
+  </main>
+
+  <script src="submit.js"></script>
+</body>
+</html>

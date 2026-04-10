@@ -1,0 +1,27 @@
+{
+  "name": "capitoday-events",
+  "version": "1.0.0",
+  "description": "Events listing prototype for Capitoday - Node.js + Express with mock data",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "events",
+    "capitoday",
+    "meme-coins",
+    "x-spaces",
+    "ama"
+  ],
+  "author": "Capitoday",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ejs": "^5.0.1",
+    "express": "^4.18.2"
+  }
+}
