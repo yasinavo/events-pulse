@@ -354,4 +354,3 @@ curl http://localhost:3000/api/events
 
 ---
 
-Built with ❤️ for the Crypto Community · [Capitoday.com](https://capitoday.com)
