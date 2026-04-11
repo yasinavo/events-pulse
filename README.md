@@ -1,4 +1,4 @@
-# Capitoday Events Prototype
+# Events Prototype
 
 A simple prototype of an events discovery platform built with Node.js/Express and vanilla JavaScript. Features 46+ mock crypto/meme coin events with real-time filtering, search, and modal detail views.
 
@@ -28,7 +28,7 @@ Server runs on **port 3000** with automatic API endpoint discovery.
 ✅ **Pagination API** — Query params for limit/page (backend ready)
 ✅ **Event Grouping** — Cards grouped by date with "Today" labels
 ✅ **Responsive Design** — Works on desktop, tablet, mobile
-✅ **Dark Theme** — Capitoday brand colors (#CDC13B accent)
+✅ **Dark Theme** — eventPulse brand colors (#CDC13B accent)
 ✅ **Smooth Animations** — Slide-in modals, glowing badges
 
 ---
