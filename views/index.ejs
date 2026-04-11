@@ -212,21 +212,33 @@
       <!-- Info Cards -->
       <div class="modal-info-cards">
         <div class="modal-info-card">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <div>
-            <span class="info-label">Date & Time</span>
-            <span class="info-value" id="modalDate">Friday, March 20, 2026</span>
-            <span class="info-sub" id="modalTime">2:00 PM — 3:30 PM EET</span>
+          <div class="modal-date-time-layout">
+            <div class="modal-date-pill" aria-hidden="true">
+              <svg class="modal-date-badge" width="24" height="28" viewBox="0 0 24 28" role="img" aria-label="Event date badge">
+                <defs>
+                  <linearGradient id="modalDateBandGradient" x1="0" y1="0" x2="24" y2="0" gradientUnits="userSpaceOnUse">
+                    <stop id="modalDateBandStart" offset="0%" stop-color="#B8AD37"></stop>
+                    <stop id="modalDateBandEnd" offset="100%" stop-color="#CDC13B"></stop>
+                  </linearGradient>
+                </defs>
+                <rect x="0" y="0" width="24" height="28" rx="4" fill="#1A1D21"></rect>
+                <rect x="0" y="0" width="24" height="11" rx="4" fill="url(#modalDateBandGradient)"></rect>
+                <text id="modalDateMonth" x="12" y="8" text-anchor="middle" font-size="7" font-weight="700" fill="#000" font-family="Inter, sans-serif">APR</text>
+                <text id="modalDateDay" x="12" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Inter, sans-serif">10</text>
+              </svg>
+            </div>
+            <div class="modal-date-time-copy">
+              <span class="modal-date-primary" id="modalDatePrimary">Friday, April 10</span>
+              <span class="modal-date-secondary" id="modalDateSecondary">9:00 AM - 4:00 PM EDT</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- CTA -->
+      <!-- Event Links -->
       <div class="modal-cta-section">
-        <button class="btn-join" id="modalJoinBtn">
-          <span>Join Space</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </button>
+        <h3 class="modal-cta-label">Event Links</h3>
+        <div class="modal-link-pills" id="modalLinkPills"></div>
       </div>
 
       <!-- About -->
@@ -240,7 +252,7 @@
         <h3>Related Token</h3>
         <div class="modal-coin-info">
           <span class="coin-tag-lg" id="modalCoin">DOGE</span>
-          <span class="modal-coin-link">View on Capitoday &rarr;</span>
+          <span class="modal-coin-link">View on EventPulse &rarr;</span>
         </div>
       </div>
 
@@ -273,8 +285,8 @@
 <!-- ════════════ FOOTER ════════════ -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <span>&copy; 2026 Capitoday</span>
-    <a href="https://capitoday.com" target="_blank" rel="noopener noreferrer">Capitoday Events</a>
+    <span>&copy; 2026 EventPulse</span>
+    <a href="/" aria-label="EventPulse home">EventPulse</a>
   </div>
 </footer>
 

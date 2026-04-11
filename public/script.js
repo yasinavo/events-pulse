@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════
-// Capitoday Events — API Integration
+// EventPulse — API Integration
 // ═══════════════════════════════════════════
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = '/api';
 let allEvents = [];
 let currentEventId = null;
 let eventIds = [];
@@ -277,6 +277,115 @@ function getIconForCategory(category) {
   return icons[category] || icons.other;
 }
 
+function getEventLinkPills(event) {
+  const safeUrl = value => {
+    if (!value) return '';
+    try {
+      return new URL(value).toString();
+    } catch {
+      return '';
+    }
+  };
+
+  const pickUrl = keys => {
+    for (const key of keys) {
+      const resolved = safeUrl(event[key]);
+      if (resolved) return resolved;
+    }
+    return '';
+  };
+
+  const symbol = event.coin?.symbol || event.title;
+  const titleQuery = encodeURIComponent(`${event.title} ${symbol}`.trim());
+  const hostQuery = encodeURIComponent(event.host?.name || event.title);
+
+  const linksByCategory = {
+    xspaces: [
+      { label: 'X Space Link', url: pickUrl(['xSpaceLink', 'eventUrl', 'primaryLink']) || `https://x.com/search?q=${titleQuery}` },
+      { label: 'Host Handles', url: pickUrl(['hostHandlesUrl']) || `https://x.com/search?q=${hostQuery}` },
+    ],
+    ama: [
+      { label: 'Event URL', url: pickUrl(['eventUrl', 'primaryLink']) || `https://x.com/search?q=${titleQuery}` },
+      { label: 'Invite Link', url: pickUrl(['inviteLink']) || `https://x.com/search?q=${encodeURIComponent(`${event.title} invite`)}` },
+    ],
+    exchange: [
+      { label: 'Exchange Pair', url: pickUrl(['exchangePairUrl']) || `https://www.coingecko.com/en/search?query=${encodeURIComponent(symbol)}` },
+      { label: 'Source Link', url: pickUrl(['sourceLink', 'eventUrl', 'primaryLink']) || `https://x.com/search?q=${titleQuery}` },
+    ],
+    livestream: [
+      { label: 'Stream URL', url: pickUrl(['streamUrl', 'eventUrl', 'primaryLink']) || `https://www.youtube.com/results?search_query=${titleQuery}` },
+      { label: 'Recording Link', url: pickUrl(['recordingLink']) || `https://www.youtube.com/results?search_query=${encodeURIComponent(`${event.title} replay`)}` },
+    ],
+    other: [
+      { label: 'Event URL', url: pickUrl(['eventUrl', 'primaryLink']) || `https://x.com/search?q=${titleQuery}` },
+    ],
+  };
+
+  const links = [
+    { label: 'Event Page', url: `/events/${event.id}`, internal: true },
+    ...(linksByCategory[event.category] || linksByCategory.other),
+  ];
+  const deduped = [];
+  const seen = new Set();
+
+  links.forEach(link => {
+    const key = `${link.label}|${link.url}|${link.internal ? 'internal' : 'external'}`;
+    if (link.url && !seen.has(key)) {
+      deduped.push(link);
+      seen.add(key);
+    }
+  });
+
+  return deduped;
+}
+
+function renderModalLinkPills(event) {
+  const container = document.getElementById('modalLinkPills');
+  if (!container) return;
+
+  const links = getEventLinkPills(event);
+  container.innerHTML = '';
+
+  links.forEach(link => {
+    const anchor = document.createElement('a');
+    anchor.className = `modal-link-pill${link.internal ? ' modal-link-pill-primary' : ''}`;
+    anchor.href = link.url;
+    if (link.internal) {
+      anchor.target = '_self';
+    } else {
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+    }
+    anchor.textContent = link.label;
+    container.appendChild(anchor);
+  });
+}
+
+function formatClockTime(value) {
+  const [rawHours, rawMinutes] = String(value || '').split(':');
+  const hours = Number(rawHours);
+  const minutes = Number(rawMinutes || 0);
+
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    return value || '';
+  }
+
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const normalized = hours % 12 || 12;
+  return `${normalized}:${String(minutes).padStart(2, '0')} ${period}`;
+}
+
+function getDateBandGradientByCategory(category) {
+  const gradients = {
+    xspaces: ['#CDC13B', '#B8AD37'],
+    ama: ['#8D7FF5', '#7C6FE0'],
+    exchange: ['#F18484', '#E06F6F'],
+    livestream: ['#8CCBEA', '#6FB8E0'],
+    other: ['#B0B0B0', '#A0A0A0'],
+  };
+  return gradients[category] || gradients.other;
+}
+
 function updateCategoryUI(categoryData) {
   const catList = document.querySelector('.cat-list');
   if (!catList) return;
@@ -419,12 +528,23 @@ function populateModal(ev) {
   document.getElementById('modalHostName').textContent = ev.host.name;
 
   // Info cards
-  document.getElementById('modalDate').textContent = new Date(ev.date).toLocaleDateString('en-US', { 
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+  const eventDate = new Date(`${ev.date}T00:00:00`);
+  document.getElementById('modalDateMonth').textContent = eventDate
+    .toLocaleDateString('en-US', { month: 'short' })
+    .toUpperCase();
+  document.getElementById('modalDateDay').textContent = String(eventDate.getDate());
+  const [bandStart, bandEnd] = getDateBandGradientByCategory(ev.category);
+  document.getElementById('modalDateBandStart').setAttribute('stop-color', bandStart);
+  document.getElementById('modalDateBandEnd').setAttribute('stop-color', bandEnd);
+  document.getElementById('modalDatePrimary').textContent = eventDate.toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric'
   });
-  document.getElementById('modalTime').textContent = `${ev.startTime} — ${ev.endTime} ${ev.timezone}`;
-  // CTA
-  document.getElementById('modalJoinBtn').querySelector('span').textContent = ev.cta.text;
+
+  const startTime = formatClockTime(ev.startTime);
+  const endTime = ev.endTime ? formatClockTime(ev.endTime) : 'TBD';
+  const timezone = ev.timezone ? ` ${ev.timezone}` : '';
+  document.getElementById('modalDateSecondary').textContent = `${startTime} - ${endTime}${timezone}`;
+  renderModalLinkPills(ev);
 
   // About
   document.getElementById('modalAbout').textContent = ev.fullDescription;
@@ -439,11 +559,19 @@ function populateModal(ev) {
 }
 
 function copyLink() {
+  if (!currentEventId) return;
+
   const btn = document.querySelector('.modal-action-btn');
   const original = btn.innerHTML;
+  const eventUrl = `${window.location.origin}/events/${currentEventId}`;
+
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(eventUrl).catch(() => {});
+  }
+
   btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
-  btn.style.color = 'var(--green)';
-  btn.style.borderColor = 'var(--green)';
+  btn.style.color = 'var(--live)';
+  btn.style.borderColor = 'var(--live)';
   setTimeout(() => {
     btn.innerHTML = original;
     btn.style.color = '';

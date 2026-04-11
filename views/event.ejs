@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div class="topnav-left">
+        <a href="/" class="logo" aria-label="EventPulse">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="#CDC13B"/>
+            <path d="M8 16c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8" stroke="#0A0B0D" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="16" cy="16" r="3" fill="#0A0B0D"/>
+          </svg>
+          <span class="logo-text">EventPulse</span>
+        </a>
+      </div>
+      <div class="topnav-right">
+        <a class="btn-submit-event" href="/submit">Submit Event</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="event-detail-main">
+    <section class="event-detail-shell">
+      <aside class="event-detail-sidebar">
+        <a class="event-back-link" href="/">&larr; Back to Events</a>
+
+        <article class="event-detail-left-card">
+          <% if (event.thumbnail) { %>
+            <img class="event-detail-cover" src="<%= event.thumbnail %>" alt="<%= event.title %>">
+          <% } else if (coinImageUrl) { %>
+            <div class="event-detail-cover event-detail-cover-coin-wrap">
+              <img
+                class="event-detail-cover-coin"
+                src="<%= coinImageUrl %>"
+                alt="<%= event.coin.symbol %> logo"
+                onerror="this.onerror=null;this.src='/coin-placeholder.svg';"
+              >
+            </div>
+          <% } else { %>
+            <div class="event-detail-cover event-detail-cover-fallback" style="background: <%= event.heroGradient %>;">
+              <span><%= event.emoji %></span>
+            </div>
+          <% } %>
+
+          <div class="event-detail-left-body">
+            <span class="event-page-label">Presented by</span>
+            <div class="event-detail-host-row">
+              <span class="host-avatar <%= event.host.avatarClass || '' %>"><%= event.host.avatar %></span>
+              <strong><%= event.host.name %></strong>
+            </div>
+
+            <p class="event-detail-host-bio"><%= event.host.bio || 'Community event by ecosystem contributors.' %></p>
+
+            <div class="event-detail-left-links">
+              <a href="#">Contact the host</a>
+              <a href="#">Report event</a>
+            </div>
+
+            <div class="event-page-tags">
+              <% (event.tags || []).forEach(tag => { %>
+                <span class="modal-tag"><%= tag %></span>
+              <% }) %>
+            </div>
+          </div>
+        </article>
+      </aside>
+
+      <article class="event-detail-content">
+        <div class="event-page-top-row">
+          <span class="event-type-badge <%= event.category %>"><%= event.type %></span>
+          <% if (event.status === 'live') { %>
+            <span class="event-live-tag"><span class="pulse-dot"></span>LIVE</span>
+          <% } else { %>
+            <span class="event-page-status"><%= event.status %></span>
+          <% } %>
+        </div>
+
+        <h1 class="event-page-title"><%= event.title %></h1>
+
+        <div class="event-page-meta-item event-page-calendar-card">
+          <div class="modal-date-time-layout event-page-date-layout">
+            <div class="modal-date-pill event-page-date-pill" aria-hidden="true">
+              <svg class="modal-date-badge" width="34" height="40" viewBox="0 0 24 28" role="img" aria-label="Event date badge">
+                <defs>
+                  <linearGradient id="eventPageDateBandGradient" x1="0" y1="0" x2="24" y2="0" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="<%= dateBadge.bandStart %>"></stop>
+                    <stop offset="100%" stop-color="<%= dateBadge.bandEnd %>"></stop>
+                  </linearGradient>
+                </defs>
+                <rect x="0" y="0" width="24" height="28" rx="4" fill="#1A1D21"></rect>
+                <rect x="0" y="0" width="24" height="11" rx="4" fill="url(#eventPageDateBandGradient)"></rect>
+                <text x="12" y="8" text-anchor="middle" font-size="7" font-weight="700" fill="#000" font-family="Inter, sans-serif"><%= dateBadge.month %></text>
+                <text x="12" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Inter, sans-serif"><%= dateBadge.day %></text>
+              </svg>
+            </div>
+            <div class="modal-date-time-copy">
+              <span class="modal-date-primary"><%= formattedDate %></span>
+              <span class="modal-date-secondary"><%= formattedTime %></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="event-detail-meta-inline">
+          <div class="event-detail-meta-inline-item">
+            <span class="event-page-label">Location</span>
+            <strong>Online Event</strong>
+          </div>
+          <div class="event-detail-meta-inline-item">
+            <span class="event-page-label">Token</span>
+            <strong><%= event.coin.name %> (<%= event.coin.symbol %>)</strong>
+          </div>
+        </div>
+
+        <div class="event-page-actions">
+          <% if (event.primaryLink || event.eventUrl || event.xSpaceLink || event.streamUrl || event.inviteLink) { %>
+            <a
+              class="event-page-btn-primary"
+              href="<%= event.primaryLink || event.eventUrl || event.xSpaceLink || event.streamUrl || event.inviteLink %>"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <%= event.cta?.text || 'Open Event Link' %>
+            </a>
+          <% } %>
+          <a class="event-page-btn-secondary" href="/">Browse More Events</a>
+        </div>
+
+        <section class="event-detail-section">
+          <h2>About Event</h2>
+          <p><%= event.fullDescription || event.description %></p>
+        </section>
+
+        <section class="event-detail-section">
+          <h2>What to Expect</h2>
+          <p>This session is designed for the community to hear updates, ask questions, and connect directly with the host team in a focused, practical format.</p>
+        </section>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

@@ -109,6 +109,41 @@ function sortEvents(results, sortBy) {
   }
 }
 
+function formatClockTime(value) {
+  const [rawHours, rawMinutes] = String(value || '').split(':');
+  const hours = Number(rawHours);
+  const minutes = Number(rawMinutes || 0);
+
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    return value || 'TBD';
+  }
+
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const normalized = hours % 12 || 12;
+  return `${normalized}:${String(minutes).padStart(2, '0')} ${period}`;
+}
+
+function getDateBandGradientByCategory(category) {
+  const gradients = {
+    xspaces: ['#CDC13B', '#B8AD37'],
+    ama: ['#8D7FF5', '#7C6FE0'],
+    exchange: ['#F18484', '#E06F6F'],
+    livestream: ['#8CCBEA', '#6FB8E0'],
+    other: ['#B0B0B0', '#A0A0A0'],
+  };
+
+  return gradients[category] || gradients.other;
+}
+
+function resolveCoinImageUrl(symbol) {
+  const safeSymbol = String(symbol || '').trim().toLowerCase();
+  if (!safeSymbol || safeSymbol === 'multi') {
+    return '/coin-placeholder.svg';
+  }
+
+  return `https://cryptoicons.org/api/icon/${safeSymbol}/200`;
+}
+
 // ════════════════════════════════════════════════════
 // 🔌 API ROUTES
 // ════════════════════════════════════════════════════
@@ -258,11 +293,42 @@ app.get('/api/stats', (req, res) => {
 // ════════════════════════════════════════════════════
 
 app.get('/', (req, res) => {
-  res.render('index', { pageTitle: 'Events - Capitoday' });
+  res.render('index', { pageTitle: 'Events - EventPulse' });
 });
 
 app.get('/submit', (req, res) => {
-  res.render('submit', { pageTitle: 'Submit Event - Capitoday' });
+  res.render('submit', { pageTitle: 'Submit Event - EventPulse' });
+});
+
+app.get('/events/:id', (req, res) => {
+  const event = mockEvents.find(e => e.id === parseInt(req.params.id, 10));
+
+  if (!event) {
+    return res.status(404).send('Event not found');
+  }
+
+  const serializedEvent = serializeEvent(event);
+  const eventDate = new Date(`${serializedEvent.date}T00:00:00`);
+  const [bandStart, bandEnd] = getDateBandGradientByCategory(serializedEvent.category);
+
+  return res.render('event', {
+    pageTitle: `${serializedEvent.title} - EventPulse`,
+    event: serializedEvent,
+    coinImageUrl: resolveCoinImageUrl(serializedEvent.coin?.symbol),
+    formattedDate: eventDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }),
+    formattedTime: `${formatClockTime(serializedEvent.startTime)} - ${serializedEvent.endTime ? formatClockTime(serializedEvent.endTime) : 'TBD'}${serializedEvent.timezone ? ` ${serializedEvent.timezone}` : ''}`,
+    dateBadge: {
+      month: eventDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+      day: String(eventDate.getDate()),
+      bandStart,
+      bandEnd,
+    },
+  });
 });
 
 // Keep legacy static paths working after switching to server-rendered routes.
@@ -281,7 +347,7 @@ app.get('/submit.html', (req, res) => {
 app.listen(PORT, () => {
   console.log(`
 ╔═════════════════════════════════════════════════════╗
-║  🚀 Capitoday Events API Running                    ║
+║  🚀 EventPulse API Running                          ║
 ╠═════════════════════════════════════════════════════╣
 ║  📍 Server: http://localhost:${PORT}                    ║
 ║  📊 API:    http://localhost:${PORT}/api/events         ║

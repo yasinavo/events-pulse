@@ -29,9 +29,9 @@
 
 .panel {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 2px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 2px 2px 0px rgba(184, 173, 55, 0.2);
 }
 
 .left-panel {
@@ -46,7 +46,7 @@
 
 .cover-preview {
   min-height: 320px;
-  border: 1px dashed var(--border);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-md);
   background: var(--surface-2);
   display: grid;
@@ -82,7 +82,7 @@
 
 .cover-upload:hover .cover-preview {
   border-color: var(--accent);
-  background: #2a2a2a;
+  background: rgba(184, 173, 55, 0.08);
 }
 
 .cover-preview.has-image {
@@ -151,7 +151,7 @@ select,
 textarea {
   width: 100%;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   background: var(--surface-2);
   color: var(--text);
   font: inherit;
@@ -185,7 +185,7 @@ textarea.invalid {
 
 .title-field input {
   background: var(--surface-2);
-  border: 1px solid var(--border);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   padding: 12px;
   font-size: 21px;
@@ -203,7 +203,7 @@ textarea.invalid {
 
 .section-box {
   border-radius: var(--radius-md);
-  border: 1px solid var(--border);
+  border: 2px solid rgba(255, 255, 255, 0.08);
   background: var(--surface-2);
   padding: 12px;
 }
@@ -242,7 +242,7 @@ textarea.invalid {
 }
 
 .detected-chip {
-  border: 1px solid var(--border);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   background: var(--surface-3);
   color: var(--text-muted);
@@ -261,7 +261,7 @@ textarea.invalid {
 }
 
 .embed-preview {
-  border: 1px solid var(--border);
+  border: 2px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
   background: var(--surface-2);
   padding: 10px;
@@ -283,7 +283,7 @@ textarea.invalid {
 
 .create-btn {
   width: 100%;
-  border: 0;
+  border: 2px solid var(--accent);
   border-radius: var(--radius);
   background: var(--accent);
   color: var(--text-dark);
@@ -291,13 +291,14 @@ textarea.invalid {
   font: inherit;
   font-size: 15px;
   font-weight: 700;
+  box-shadow: 4px 4px 0px #0F0E0E, 4px 4px 0px 1px #B8AD37;
   transition: all var(--transition);
 }
 
 .create-btn:hover {
   background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0px #0F0E0E, 4px 4px 0px 1px #B8AD37;
 }
 
 #formMessage {
