@@ -47,3 +47,6 @@ logs/
 
 # Misc
 *.pem
+
+# Planning docs
+IMPLEMENTATION_PLAN.md
