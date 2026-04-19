@@ -6,7 +6,8 @@
 <title><%= pageTitle %></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>:root { --font: 'Roboto Mono', monospace; }</style>
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -56,6 +57,13 @@
       <div class="stat-pill">
         <span>12 This Week</span>
       </div>
+      <label class="cal-toggle" title="Show/hide calendar">
+        <span class="cal-toggle-label">Calendar</span>
+        <span class="cal-toggle-track">
+          <input type="checkbox" id="calendarToggle" checked>
+          <span class="cal-toggle-thumb"></span>
+        </span>
+      </label>
     </div>
   </div>
 </header>
@@ -116,6 +124,7 @@
 
     <!-- RIGHT: CALENDAR & MAP -->
     <aside class="sidebar-right">
+      <div class="cal-collapsible">
       <div class="mini-calendar">
         <div class="cal-header">
           <button class="cal-nav" aria-label="Previous month">&lsaquo;</button>
@@ -140,13 +149,14 @@
       </div>
 
       <div class="sidebar-right-tabs">
-        <button class="srt active">Upcoming</button>
-        <button class="srt">Past</button>
+        <button class="srt active" type="button" data-sidebar-view="upcoming">Upcoming</button>
+        <button class="srt" type="button" data-sidebar-view="past">Past</button>
       </div>
 
       <div class="quick-upcoming">
         <!-- Will be populated dynamically -->
       </div>
+      </div><!-- /.cal-collapsible -->
 
       <div class="submit-cta">
         <a class="btn-submit-event" href="/submit">

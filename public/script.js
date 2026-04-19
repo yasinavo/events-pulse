@@ -2,14 +2,27 @@
 // EventPulse — API Integration
 // ═══════════════════════════════════════════
 
+// ── Calendar toggle ──
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('calendarToggle');
+  const mainInner = document.querySelector('.main-inner');
+  if (toggle && mainInner) {
+    toggle.addEventListener('change', () => {
+      mainInner.classList.toggle('cal-hidden', !toggle.checked);
+    });
+  }
+});
+
 const API_BASE = '/api';
 let allEvents = [];
 let currentEventId = null;
 let eventIds = [];
+let timelineStickyInitialized = false;
 const noMediaEventIds = new Set([2, 5, 8, 11]);
 const TODAY_DATE = '2026-03-20';
 let calendarViewDate = new Date(`${TODAY_DATE}T00:00:00`);
 let selectedCalendarDate = null;
+let sidebarView = 'upcoming';
 let currentFilters = {
   category: 'all',
   status: '',
@@ -98,6 +111,7 @@ function renderEventCards() {
 
   updateTodayTabVisibility();
   renderCalendar();
+  renderSidebarEvents();
 
   const visibleEvents = selectedCalendarDate
     ? allEvents.filter(event => event.date === selectedCalendarDate)
@@ -121,6 +135,70 @@ function renderEventCards() {
     const events = eventsByDate[date];
     const dateGroup = createDateGroup(date, events);
     feed.appendChild(dateGroup);
+  });
+
+  setupTimelineStickyDate();
+}
+
+function updateActiveTimelineGroup() {
+  const feed = document.querySelector('.feed');
+  if (!feed) return;
+
+  const groups = Array.from(feed.querySelectorAll('.date-group'));
+  if (!groups.length) return;
+
+  const stickyTop = Number.parseFloat(
+    getComputedStyle(feed).getPropertyValue('--timeline-sticky-top')
+  ) || 8;
+
+  let activeIndex = 0;
+
+  for (let i = 0; i < groups.length; i += 1) {
+    const header = groups[i].querySelector('.date-header');
+    if (!header) continue;
+
+    if (header.getBoundingClientRect().top <= stickyTop + 0.5) {
+      activeIndex = i;
+    } else {
+      break;
+    }
+  }
+
+  groups.forEach((group, index) => {
+    group.classList.toggle('active', index === activeIndex);
+  });
+}
+
+function updateTimelineStickyTop() {
+  const feed = document.querySelector('.feed');
+  if (!feed) return;
+
+  const topnav = document.querySelector('.topnav');
+  const topOffset = (topnav ? topnav.offsetHeight : 0) + 10;
+  feed.style.setProperty('--timeline-sticky-top', `${topOffset}px`);
+}
+
+function setupTimelineStickyDate() {
+  updateTimelineStickyTop();
+  updateActiveTimelineGroup();
+
+  if (timelineStickyInitialized) return;
+  timelineStickyInitialized = true;
+
+  let ticking = false;
+  const scheduleUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      updateActiveTimelineGroup();
+      ticking = false;
+    });
+  };
+
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', () => {
+    updateTimelineStickyTop();
+    scheduleUpdate();
   });
 }
 
@@ -187,6 +265,80 @@ function shiftCalendarMonth(offset) {
   renderCalendar();
 }
 
+function getEventDateTime(event) {
+  return new Date(`${event.date}T${event.startTime || '00:00'}`);
+}
+
+function renderSidebarEvents() {
+  const container = document.querySelector('.quick-upcoming');
+  if (!container) return;
+
+  const filteredEvents = allEvents
+    .filter(event => {
+      if (sidebarView === 'past') {
+        return event.status === 'past';
+      }
+
+      return event.status === 'live' || event.status === 'upcoming';
+    })
+    .sort((left, right) => {
+      const leftTime = getEventDateTime(left).getTime();
+      const rightTime = getEventDateTime(right).getTime();
+      return sidebarView === 'past' ? rightTime - leftTime : leftTime - rightTime;
+    })
+    .slice(0, 5);
+
+  if (filteredEvents.length === 0) {
+    container.innerHTML = `<div class="qu-empty">No ${sidebarView} events in this view.</div>`;
+    return;
+  }
+
+  container.innerHTML = filteredEvents.map(event => `
+    <article class="qu-item" data-event-id="${event.id}">
+      <span class="qu-dot ${event.status === 'live' ? 'live' : ''}"></span>
+      <div class="qu-info">
+        <span class="qu-time">${event.date} • ${formatClockTime(event.startTime)}</span>
+        <span class="qu-title">${event.title}</span>
+      </div>
+    </article>
+  `).join('');
+
+  container.querySelectorAll('.qu-item').forEach(item => {
+    item.addEventListener('click', async () => {
+      const eventId = item.dataset.eventId;
+      if (!eventId) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/events/${eventId}`);
+        const result = await response.json();
+        if (!result.success) throw new Error('Event not found');
+        currentEventId = Number(eventId);
+        populateModal(result.data);
+        document.getElementById('modalBackdrop').classList.add('open');
+        document.getElementById('modalPanel').classList.add('open');
+        document.getElementById('modalPanel').setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+        document.getElementById('modalScroll').scrollTop = 0;
+      } catch (error) {
+        console.error('Error loading event:', error);
+      }
+    });
+  });
+}
+
+function animateSidebarSwitch(nextView) {
+  const container = document.querySelector('.quick-upcoming');
+  if (!container || sidebarView === nextView) return;
+
+  container.classList.add('is-switching');
+
+  window.setTimeout(() => {
+    sidebarView = nextView;
+    renderSidebarEvents();
+    container.classList.remove('is-switching');
+  }, 140);
+}
+
 function createDateGroup(dateStr, events) {
   const div = document.createElement('div');
   div.className = 'date-group';
@@ -196,12 +348,12 @@ function createDateGroup(dateStr, events) {
   const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
   const monthDay = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-  let dateLabel = isToday ? `Today &middot; ${dayName}` : `${monthDay} &middot; ${dayName}`;
+  let dateLabel = `${monthDay} ${dayName}`;
 
   const header = document.createElement('div');
   header.className = 'date-header';
   header.innerHTML = `
-    <h2>${dateLabel}</h2>
+    <h2 class="date-heading">${dateLabel}</h2>
     <span class="date-count">${events.length} event${events.length !== 1 ? 's' : ''}</span>
   `;
   div.appendChild(header);
@@ -637,6 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.srt').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      animateSidebarSwitch(btn.dataset.sidebarView || 'upcoming');
     });
   });
 
