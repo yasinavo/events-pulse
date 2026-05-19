@@ -380,13 +380,6 @@ function createEventCard(event) {
     return '';
   })();
 
-  const showMedia = !noMediaEventIds.has(event.id);
-  const thumbnail = !showMedia
-    ? ''
-    : event.thumbnail
-      ? `<div class="event-thumb has-thumb"><img src="${event.thumbnail}" alt="${event.title}" loading="lazy"></div>`
-      : `<div class="event-thumb"><div class="thumb-placeholder" style="background: ${event.heroGradient};"><span>${event.emoji}</span></div></div>`;
-
   card.innerHTML = `
     <div class="event-time">
       <span class="time-dot ${event.status === 'live' ? 'live' : ''}"></span>
@@ -412,7 +405,6 @@ function createEventCard(event) {
         </div>
       </div>
     </div>
-    ${thumbnail}
   `;
 
   return card;
@@ -637,31 +629,9 @@ async function navigateEvent(direction) {
 
 function populateModal(ev) {
   if (!ev) return;
-  const hideMedia = noMediaEventIds.has(ev.id);
 
-  // Hero
-  const heroImg = document.getElementById('modalHeroImg');
-  const heroFallback = document.getElementById('modalHeroFallback');
-
-  if (hideMedia) {
-    heroImg.classList.remove('show');
-    heroImg.src = '';
-    heroFallback.classList.add('hide');
-    document.getElementById('modalHero').style.display = 'none';
-  } else if (ev.thumbnail) {
-    heroImg.src = ev.thumbnail;
-    heroImg.alt = ev.title;
-    heroImg.classList.add('show');
-    heroFallback.classList.add('hide');
-    document.getElementById('modalHero').style.display = '';
-  } else {
-    heroImg.classList.remove('show');
-    heroImg.src = '';
-    heroFallback.classList.remove('hide');
-    heroFallback.style.background = ev.heroGradient;
-    document.getElementById('modalEmoji').textContent = ev.emoji;
-    document.getElementById('modalHero').style.display = '';
-  }
+  // Hide hero/thumbnail section
+  document.getElementById('modalHero').style.display = 'none';
 
   // Type badge
   const badge = document.getElementById('modalTypeBadge');
